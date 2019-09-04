@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Chest</title>
+    
+    <link href="/css/bootstrap.min.css" type="text/css" rel="stylesheet"/>
+    <link href="/css/bootstrap-grid.min.css" type="text/css" rel="stylesheet"/>
+    <link href="/css/bootstrap-reboot.min.css" type="text/css" rel="stylesheet"/>
+    
+</head>
+<body>
+<header class="mb-3">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="#">Chest</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="~/api/Goods">Home <span class="sr-only">(current)</span></a>
+                </li>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li class="nav-item active">
+                        <form method="post" asp-controller="Account" asp-action="LogOff">
+                            <input class="form-control" type="submit" value="Logout" />
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-controller="Account" asp-action="Register">Registration</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                    </li>
+                }
+
+
+            </ul>
+        </div>
+    </nav>
+</header>
+<div>
+    @RenderBody()
+</div>
+<div>
+    
+    <footer class="container-fluid fixed-bottom">
+        <hr/>
+        <p>© 2019 Chest, Inc. · <a href="#">Privacy</a> · <a href="#">Terms</a></p>
+    </footer>
+</div>
+
+    <script src="js/bootstrap.js"></script>
+</body>
+</html>

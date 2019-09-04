@@ -1,0 +1,28 @@
+﻿@model object
+
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>@ViewBag.Category</title>
+</head>
+<body>
+<div class="mt-5 p-3">
+    <table class="table">
+        <tr>
+            <td class="col"><h4>Goods</h4></td>
+            <td class="col"><h4>Category</h4></td>
+        </tr>
+        @foreach (var goods in ViewBag.GoodsByCategory)
+        {
+            <tr>
+                <td>@goods.Name</td>
+                <td>@ViewBag.Category</td>
+            </tr>
+        }
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,122 @@
+﻿@page
+@model Chest.Views.Goods.GetAllGoodsModel
+@using System.IO
+@using System.Runtime.Serialization.Json
+@using Chest.Models
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>title</title>
+</head>
+<body>
+<div class="float-left mt-5 mr-3 pl-2">
+    <div>
+        <h4>Get goods by:</h4>
+        <form method="get" asp-controller="Goods" asp-action="GetGoodsByCategory">
+            <div class="form-group">
+                <label for="categorySelect">Categories</label>
+                <select class="form-control" name="Category" id="categorySelect">
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        <option>@category.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="submit" value="Get"/>
+            </div>
+        </form>
+    </div>
+    <div>
+        <form method="get" asp-controller="Goods" asp-action="GetGoodsByManufacturer">
+            <div class="form-group">
+                <label for="manufacturerSelect">Manufacturers</label>
+                <select class="form-control" name="Manufacturer" id="manufacturerSelect">
+                    @foreach (var manufacturer in ViewBag.Manufacturers)
+                    {
+                        <option>@manufacturer.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="submit" value="Get" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div class="float-right mt-5 ml-3 pr-2" style="width: 250px">
+    <h4>Add Goods</h4>
+    <form method="post" asp-controller="Goods" asp-action="AddGoods">
+        <div class="form-group">
+            <label for="goodsName">Goods name</label>
+            <input class="form-control" type="text" name="goodsName" id="goodsName"/>
+        </div>
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input class="form-control" type="number" name="price" id="price"/>
+        </div>
+        <div class="form-group">
+            <label for="categoryName">Category name</label>
+            <input class="form-control" type="text" name="categoryName" id="categoryName"/>
+        </div>
+        <div class="form-group">
+            <label for="manufacturerName">Manufacturer name</label>
+            <input class="form-control" type="text" name="manufacturerName" id="manufacturerName"/>
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="submit" value="Send"/>
+        </div>
+    </form>
+</div>
+
+<div class="float-right" style="clear: right; width: 250px">
+    <h4>Upload Goods from file</h4>
+    <div>
+        <form method="post" enctype="multipart/form-data" asp-controller="Goods" asp-action="AddGoodsFromFile">
+            <div class="form-group">
+                <label for="goodsFile">Choose file</label>
+                <input class="form-control" type="file" name="goodsFile" id="goodsFile" />
+            </div>
+            <div><input class="form-control" type="submit" value="Send"/></div>
+        </form>
+    </div>
+</div>
+@*Десериализация JSON файла*@
+<div class="mt-5 pt-3 container align-content-center" style="width: 700px" name="goods list">
+    <table class="table">
+        <tr>
+            <td class="col"><h4>Name</h4></td>
+            <td class="col"><h4>Price</h4></td>
+            <td class="col"><h4>Category</h4></td>
+            <td class="col"><h4>Manufacturer</h4></td>
+        </tr>
+        @{
+            
+            DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(List<Goods>));
+            List<Category> categories = ViewBag.Categories;
+            List<Manufacturer> manufacturers = ViewBag.Manufacturers;
+            using (FileStream fileStream = new FileStream(@"C:\Users\user\source\repos\Chest\Chest\Goods.json", FileMode.OpenOrCreate))
+            {
+                List<Goods> DesGoods = (List<Goods>) jsonSerializer.ReadObject(fileStream);
+                foreach (var goods in DesGoods)
+                {
+                    <tr>
+                        <td>@goods.Name</td>
+                        <td> @goods.Price</td>
+                        <td>@categories.FirstOrDefault(category => category.ID == goods.CategoryID)?.Name</td>
+                        <td>@manufacturers.FirstOrDefault(manufacturer => manufacturer.ID == goods.ManufacturerID)?.Name</td>
+                    </tr>
+
+                }
+            }
+        }
+    </table>
+</div>
+
+</body>
+</html>

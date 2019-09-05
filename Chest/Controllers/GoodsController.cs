@@ -150,31 +150,35 @@ namespace Chest.Controllers
         [HttpPost()]
         public IActionResult AddGoodsFromFile(IFormFile goodsFile)
         {
-            string goodsNameFromFile = null;
-            string path = "/files/" + goodsFile.Name;
-            using (FileStream fileStream = new FileStream(_hostingEnvironment.WebRootPath + path, FileMode.Create))
-            {
-                goodsFile.CopyTo(fileStream);
-            }
-            using (StreamReader streamReader = new StreamReader(_hostingEnvironment.WebRootPath + path, Encoding.Default))
-            {
-                while (!streamReader.EndOfStream)
-                {
-                    goodsNameFromFile = streamReader.ReadLine();
-                    if (!_databaseContext.Goods.Any(tmpGoods => tmpGoods.Name == goodsNameFromFile))
-                    {
-                        _databaseContext.Goods.Add(new Goods
-                        {
-                            Name = goodsNameFromFile,
-                            Price = Int32.Parse(streamReader?.ReadLine()),
-                            Category = _databaseContext.Categories.FirstOrDefault(category => category.Name == streamReader.ReadLine()),
-                            Manufacturer = _databaseContext.Manufacturers.FirstOrDefault(manufacturer => manufacturer.Name == streamReader.ReadLine())
-                        });
-                        _databaseContext.SaveChanges();
-                    }
-                }
+            //string goodsNameFromFile = null;
+            //string path = "/files/" + goodsFile.Name;
+            //using (FileStream fileStream = new FileStream(_hostingEnvironment.WebRootPath + path, FileMode.Create))
+            //{
+            //    goodsFile.CopyTo(fileStream);
+            //}
+            //using (StreamReader streamReader = new StreamReader(_hostingEnvironment.WebRootPath + path, Encoding.Default))
+            //{
+            //    while (!streamReader.EndOfStream)
+            //    {
+            //        goodsNameFromFile = streamReader.ReadLine();
+            //        if (!_databaseContext.Goods.Any(tmpGoods => tmpGoods.Name == goodsNameFromFile))
+            //        {
+            //            _databaseContext.Goods.Add(new Goods
+            //            {
+            //                Name = goodsNameFromFile,
+            //                Price = Int32.Parse(streamReader?.ReadLine()),
+            //                Category = _databaseContext.Categories.FirstOrDefault(category => category.Name == streamReader.ReadLine()),
+            //                Manufacturer = _databaseContext.Manufacturers.FirstOrDefault(manufacturer => manufacturer.Name == streamReader.ReadLine())
+            //            });
+            //            _databaseContext.SaveChanges();
+            //        }
+            //    }
                 
-            }
+            //}
+            Task addGoodsTask = new Task(() => GoodsFromFileTask(goodsFile));
+            addGoodsTask.Start();
+            addGoodsTask.Wait();
+
             return Redirect("~/api/Goods");
         }
 
@@ -232,6 +236,35 @@ namespace Chest.Controllers
                 _databaseContext.SaveChanges();
                 _goodsCounter.OnAdded += Message;
 
+            }
+        }
+
+        [NonAction]
+        public void GoodsFromFileTask(IFormFile goodsFile)
+        {
+            string goodsNameFromFile = null;
+            string path = "/files/" + goodsFile.Name;
+            using (FileStream fileStream = new FileStream(_hostingEnvironment.WebRootPath + path, FileMode.Create))
+            {
+                goodsFile.CopyTo(fileStream);
+            }
+            using (StreamReader streamReader = new StreamReader(_hostingEnvironment.WebRootPath + path, Encoding.Default))
+            {
+                while (!streamReader.EndOfStream)
+                {
+                    goodsNameFromFile = streamReader.ReadLine();
+                    if (!_databaseContext.Goods.Any(tmpGoods => tmpGoods.Name == goodsNameFromFile))
+                    {
+                        _databaseContext.Goods.Add(new Goods
+                        {
+                            Name = goodsNameFromFile,
+                            Price = Int32.Parse(streamReader?.ReadLine()),
+                            Category = _databaseContext.Categories.FirstOrDefault(category => category.Name == streamReader.ReadLine()),
+                            Manufacturer = _databaseContext.Manufacturers.FirstOrDefault(manufacturer => manufacturer.Name == streamReader.ReadLine())
+                        });
+                        _databaseContext.SaveChanges();
+                    }
+                }
             }
         }
 

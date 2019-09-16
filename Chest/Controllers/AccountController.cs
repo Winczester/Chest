@@ -18,11 +18,15 @@ namespace Chest.Controllers
 
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly EmailService _emailService;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(UserManager<User> userManager,
+            SignInManager<User> signInManager,
+            EmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
         }
 
         [HttpGet("Register")]
@@ -33,6 +37,12 @@ namespace Chest.Controllers
 
         [HttpGet("Login")]
         public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpGet("ForgotPassword")]
+        public IActionResult ForgotPassword()
         {
             return View();
         }
@@ -91,6 +101,44 @@ namespace Chest.Controllers
         public async Task<IActionResult> LogOff()
         {
             await _signInManager.SignOutAsync();
+            return RedirectToAction("GetAllGoods", "Goods");
+        }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromForm]string email ,[FromForm]string newPassword)
+        {
+            User user = await _userManager.FindByEmailAsync(email);
+            string message = $"<h2>You has been changed your password</h2><p>Your new password : {newPassword}</p>";
+            if (user != null)
+            {
+                var passwordValidator =
+                    HttpContext.RequestServices.GetService(
+                        typeof(IPasswordValidator<User>)) as IPasswordValidator<User>;
+                var PasswordHasher =
+                    HttpContext.RequestServices.GetService(
+                        typeof(IPasswordHasher<User>)) as IPasswordHasher<User>;
+
+                var result = await passwordValidator.ValidateAsync(_userManager, user, newPassword);
+                if (result.Succeeded)
+                {
+                    user.PasswordHash = PasswordHasher.HashPassword(user, newPassword);
+                    await _userManager.UpdateAsync(user);
+                    await _emailService.SendEmailAsync(email, "New Password", message);
+
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(String.Empty, error.Description);
+                    }
+                }
+            }
+            else
+            {
+                return new ObjectResult("User not found");
+            }
+
             return RedirectToAction("GetAllGoods", "Goods");
         }
     }

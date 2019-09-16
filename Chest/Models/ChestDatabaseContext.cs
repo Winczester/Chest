@@ -13,6 +13,7 @@ namespace Chest.Models
         public DbSet<Goods> Goods { get; set; }
         public DbSet<Manufacturer> Manufacturers { get; set; }
         public DbSet<ManufacturerCategory> ManufacturerCategories { get; set; }
+        public DbSet<ShopBasket> ShopBasket { get; set; }
 
         public ChestDatabaseContext(DbContextOptions<ChestDatabaseContext> dbContextOptions) : base(dbContextOptions) { }
 
@@ -41,7 +42,9 @@ namespace Chest.Models
                 .WithMany(category => category.ManufacturerCategories)
                 .HasForeignKey(manuCat => manuCat.CategoryID);
             modelBuilder.Entity<ManufacturerCategory>().HasKey(manuCat => new {manuCat.CategoryID, manuCat.ManufacturerID});
-            
+
+            modelBuilder.Entity<ShopBasket>().HasKey(basket => basket.Id);
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

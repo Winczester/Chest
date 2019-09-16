@@ -28,11 +28,13 @@ namespace Chest
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ChestDatabaseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDbContext<ChestIdentityDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("IdentityDBConnection")));
+            services.AddDbContext<ChestIdentityDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddScoped<GoodsCounter>();
+            services.AddTransient<EmailService>();
 
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<ChestIdentityDBContext>();
 
+            services.AddSession();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
@@ -45,9 +47,11 @@ namespace Chest
                 app.UseDeveloperExceptionPage();
             }
 
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseAuthentication();
+            app.UseSession();
 
             app.UseMvc();
         }

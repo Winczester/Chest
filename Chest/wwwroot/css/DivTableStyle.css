@@ -1,0 +1,9 @@
+﻿div .dibTable {
+    display: table
+}
+
+form.tr, div.tr {
+    display: table-row
+}
+
+

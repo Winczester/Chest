@@ -22,6 +22,9 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="~/api/Goods">Home <span class="sr-only">(current)</span></a>
                 </li>
+                <li class="nav-item active">
+                    <a class="nav-link" asp-controller="Goods" asp-action="ShopBasket">Basket</a>
+                </li>
                 @if (User.Identity.IsAuthenticated)
                 {
                     <li class="nav-item active">

@@ -88,7 +88,36 @@
 </div>
 @*Десериализация JSON файла*@
 <div class="mt-5 pt-3 container align-content-center" style="width: 700px" name="goods list">
-    <table class="table">
+    <div class="table">
+        <div class="d-md-table-row m2">
+            <div class="d-md-table-cell m2"><h4>Name</h4></div>
+            <div class="d-md-table-cell m2"><h4>Price</h4></div>
+            <div class="d-md-table-cell m2"><h4>Category</h4></div>
+            <div class="d-md-table-cell m2"><h4>Manufacturer</h4></div>
+        </div>
+        @{
+
+            DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(List<Goods>));
+            List<Category> categories = ViewBag.Categories;
+            List<Manufacturer> manufacturers = ViewBag.Manufacturers;
+            using (FileStream fileStream = new FileStream(@"C:\Users\user\source\repos\Chest\Chest\Goods.json", FileMode.OpenOrCreate))
+            {
+                List<Goods> DesGoods = (List<Goods>)jsonSerializer.ReadObject(fileStream);
+                foreach (var goods in DesGoods)
+                {
+                    <form class="d-md-table-row m2" asp-controller="Goods" asp-action="AddToBasket">
+                        <div class="d-md-table-cell"><input type="hidden" name="id" value="@goods.ID" /></div>
+                        <div class="d-md-table-cell m2">@goods.Name</div>
+                        <div class="d-md-table-cell m2">@goods.Price</div>
+                        <div class="d-md-table-cell m2">@categories.FirstOrDefault(category => category.ID == goods.CategoryID)?.Name</div>
+                        <div class="d-md-table-cell m2">@manufacturers.FirstOrDefault(manufacturer => manufacturer.ID == goods.ManufacturerID)?.Name</div>
+                        <div class="d-md-table-cell m2"><input class="form-control btn-sm" type="submit" value="Add to basket" /></div>
+                    </form>
+                }
+            }
+        }
+    </div>
+    @*<table class="table">
         <tr>
             <td class="col"><h4>Name</h4></td>
             <td class="col"><h4>Price</h4></td>
@@ -96,7 +125,7 @@
             <td class="col"><h4>Manufacturer</h4></td>
         </tr>
         @{
-            
+
             DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(List<Goods>));
             List<Category> categories = ViewBag.Categories;
             List<Manufacturer> manufacturers = ViewBag.Manufacturers;
@@ -105,17 +134,24 @@
                 List<Goods> DesGoods = (List<Goods>) jsonSerializer.ReadObject(fileStream);
                 foreach (var goods in DesGoods)
                 {
-                    <tr>
-                        <td>@goods.Name</td>
-                        <td> @goods.Price</td>
-                        <td>@categories.FirstOrDefault(category => category.ID == goods.CategoryID)?.Name</td>
-                        <td>@manufacturers.FirstOrDefault(manufacturer => manufacturer.ID == goods.ManufacturerID)?.Name</td>
-                    </tr>
+                    <form>
+                        <tr>
+
+                            <td><input type="hidden" name="id" value="@goods.ID"/></td>
+                            <td>@goods.Name</td>
+                            <td>@goods.Price</td>
+                            <td>@categories.FirstOrDefault(category => category.ID == goods.CategoryID)?.Name</td>
+                            <td>@manufacturers.FirstOrDefault(manufacturer => manufacturer.ID == goods.ManufacturerID)?.Name</td>
+                            <td><input class="form-control btn-sm" type="submit" value="Add to basket"/>
+
+                        </tr>
+                    </form>
+
 
                 }
             }
         }
-    </table>
+    </table>*@
 </div>
 
 </body>

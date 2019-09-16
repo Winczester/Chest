@@ -26,14 +26,19 @@ namespace Chest.Controllers
         private readonly ChestDatabaseContext _databaseContext;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly GoodsCounter _goodsCounter;
+        private readonly EmailService _emailService;
         public string MessageForEvent { get; set; }
 
 
-        public GoodsController(ChestDatabaseContext context, IHostingEnvironment environment, GoodsCounter goodsCounter)
+        public GoodsController(ChestDatabaseContext context,
+            IHostingEnvironment environment,
+            GoodsCounter goodsCounter,
+            EmailService emailService)
         {
             _databaseContext = context;
             _hostingEnvironment = environment;
             _goodsCounter = goodsCounter;
+            _emailService = emailService;
 
             if (_databaseContext.Categories.Any() == false & _databaseContext.Manufacturers.Any() == false & _databaseContext.Goods.Any() == false)
             {
@@ -114,6 +119,57 @@ namespace Chest.Controllers
             }
         }
 
+        [HttpGet("ShopBasket")]
+        public IActionResult ShopBasket()
+        {
+            Stack<Goods> basketStack = new Stack<Goods>();
+            foreach (var goodsKey in HttpContext.Session.Keys)
+            {
+                if (_databaseContext.Goods.Any(goods => goods.ID.ToString() == goodsKey))
+                {
+                    basketStack.Push(HttpContext.Session.Get<Goods>(goodsKey));
+                }
+                
+            }
+
+            ViewBag.BasketStack = basketStack;
+            return View();
+        }
+
+        [HttpPost("ShopBasket/SendEmail")]
+        public async Task<IActionResult> SendEmailWithGoods([FromForm]string email)
+        {
+            StringBuilder message = new StringBuilder("<h2>Bought Goods</h2><table><tr><td>Name</td><td>Price</td></tr>");
+            foreach (var goodsKey in HttpContext.Session.Keys)
+            {
+                if (_databaseContext.Goods.Any(goods => goods.ID.ToString() == goodsKey))
+                {
+                    message.Append(
+                        $"<tr><td>{HttpContext.Session.Get<Goods>(goodsKey).Name}</td><td>{HttpContext.Session.Get<Goods>(goodsKey).Price}</td></tr>");
+                }
+            }
+
+            message.Append("</table>");
+            await _emailService.SendEmailAsync(email, "Chest", message.ToString());
+            return Redirect("~/api/Goods");
+        }
+
+        [HttpPost]
+        public IActionResult ShopBasket([FromForm] int id)
+        {
+            
+            Goods goodsToAdd = _databaseContext.Goods.FirstOrDefault(goods => goods.ID == id);
+            if (goodsToAdd != null)
+            {
+                HttpContext.Session.Set<Goods>($"{goodsToAdd.ID}", goodsToAdd);
+                return Redirect("~/api/Goods");
+            }
+            else
+            {
+                return Content("Goods not added");
+            }
+        }
+
         //Глава 6: Делегаты, события и лямбда-выражения. Глава 16. Многопоточность
         [HttpPost("AddGoods")]
         public IActionResult AddGoods([FromForm]string goodsName, [FromForm] int price, [FromForm]string categoryName, [FromForm]string manufacturerName)
@@ -147,7 +203,7 @@ namespace Chest.Controllers
         }
 
         //Глава 10: Работа с потоками и файловой системой, чтение текстовых файлов
-        [HttpPost()]
+        [HttpPost("AddGoodsFromFile")]
         public IActionResult AddGoodsFromFile(IFormFile goodsFile)
         {
             //string goodsNameFromFile = null;

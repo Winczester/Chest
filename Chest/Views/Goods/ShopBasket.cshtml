@@ -1,0 +1,41 @@
+﻿@using System.Collections
+
+@{
+    ViewData["Title"] = "ShopBasket";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+
+<div>
+    <table class="table mt-5">
+        <tr>
+            <td>Name</td>
+            <td>Price</td>
+        </tr>
+
+        @{
+            Stack<Goods> basketStack = ViewBag.BasketStack;
+            foreach (var basket in basketStack)
+            {
+                <tr>
+                    <td>@basket.Name</td>
+                    <td>@basket.Price</td>
+                </tr>
+            }
+
+        }
+    </table>
+    <form method="post" asp-controller="Goods" asp-action="SendEmailWithGoods">
+        <input type="text" name="email"/>
+        <input type="submit" value="Buy"/>
+    </form>
+</div>
+
+</body>
+</html>
+

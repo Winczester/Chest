@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Razor.Language.CodeGeneration;
@@ -11,26 +12,15 @@ namespace Chest
     public class EmailService
     {
 
-        public async Task SendEmailAsync(string email, string subject, string message)
+        public void SendEmail(string email, string subject, string message)
         {
-            var emailMessage = new MimeMessage();
+            Assembly senderAssembly = Assembly.LoadFrom("C:/Users/user/source/repos/Chest/SenderLibrary/bin/Debug/netcoreapp2.1/SenderLibrary.dll");
 
-            emailMessage.From.Add(new MailboxAddress("Chest Administration", "dmytro.kurnitskiy@gmail.com"));
-            emailMessage.To.Add(new MailboxAddress("", email));
-            emailMessage.Subject = subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = message
-            };
+            Type emailSenderType = senderAssembly.GetType("SenderLibrary.EmailSender", true, true);
 
-            using (var client = new SmtpClient())
-            {
-                await client.ConnectAsync("smtp.gmail.com", 465, true);
-                await client.AuthenticateAsync("dmytro.kurnitskiy@gmail.com", "01112000Deimoon");
-                await client.SendAsync(emailMessage);
-
-                await client.DisconnectAsync(true);
-            }
+            object obj = Activator.CreateInstance(emailSenderType);
+            MethodInfo method = emailSenderType.GetMethod("Send");
+            method?.Invoke(obj, new object[]{email, subject, message});
         }
 
     }

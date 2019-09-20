@@ -123,7 +123,7 @@ namespace Chest.Controllers
                 {
                     user.PasswordHash = PasswordHasher.HashPassword(user, newPassword);
                     await _userManager.UpdateAsync(user);
-                    await _emailService.SendEmailAsync(email, "New Password", message);
+                    _emailService.SendEmail(email, "New Password", message);
 
                 }
                 else

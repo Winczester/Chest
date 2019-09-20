@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
@@ -137,7 +138,7 @@ namespace Chest.Controllers
         }
 
         [HttpPost("ShopBasket/SendEmail")]
-        public async Task<IActionResult> SendEmailWithGoods([FromForm]string email)
+        public IActionResult SendEmailWithGoods([FromForm]string email)
         {
             StringBuilder message = new StringBuilder("<h2>Bought Goods</h2><table><tr><td>Name</td><td>Price</td></tr>");
             foreach (var goodsKey in HttpContext.Session.Keys)
@@ -150,7 +151,7 @@ namespace Chest.Controllers
             }
 
             message.Append("</table>");
-            await _emailService.SendEmailAsync(email, "Chest", message.ToString());
+            _emailService.SendEmail(email, "Chest", message.ToString());
             return Redirect("~/api/Goods");
         }
 
@@ -189,13 +190,17 @@ namespace Chest.Controllers
             //}
 
             Thread goodsThread = new Thread(new ParameterizedThreadStart(GoodsThread));
-            goodsThread.Start(new Goods
-            {
-                Name = goodsName,
-                Price = price,
-                Category = _databaseContext.Categories.FirstOrDefault(category => category.Name == categoryName),
-                Manufacturer = _databaseContext.Manufacturers.FirstOrDefault(manufacturer => manufacturer.Name == manufacturerName)
-            });
+            Goods goodsToAdd = new Goods();
+            Type goodsType = typeof(Goods);
+            PropertyInfo goodsNameProp = goodsType.GetProperty("Name");
+            PropertyInfo goodsPriceProp = goodsType.GetProperty("Price");
+            PropertyInfo goodsCategoryProp = goodsType.GetProperty("Category");
+            PropertyInfo goodsManufacturerProp = goodsType.GetProperty("Manufacturer");
+            goodsNameProp?.SetValue(goodsToAdd, goodsName);
+            goodsPriceProp?.SetValue(goodsToAdd, price);
+            goodsCategoryProp?.SetValue(goodsToAdd, _databaseContext.Categories.FirstOrDefault(category => category.Name == categoryName));
+            goodsManufacturerProp?.SetValue(goodsToAdd, _databaseContext.Manufacturers.FirstOrDefault(manufacturer => manufacturer.Name == manufacturerName));
+            goodsThread.Start(goodsToAdd);
             goodsThread.Join();
 
             _goodsCounter.Added();

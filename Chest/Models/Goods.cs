@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Chest.Models
 {
     [DataContract]
-    public class Goods
+    public class Goods : IGoods
     {
         [DataMember]
         public int ID { get; set; } // Primary key

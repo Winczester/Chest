@@ -17,7 +17,7 @@
         <form method="get" asp-controller="Goods" asp-action="GetGoodsByCategory">
             <div class="form-group">
                 <label for="categorySelect">Categories</label>
-                <select class="form-control" name="Category" id="categorySelect">
+                <select class="formSelectBar" name="Category" id="categorySelect">
                     @foreach (var category in ViewBag.Categories)
                     {
                         <option>@category.Name</option>
@@ -25,7 +25,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <input class="form-control" type="submit" value="Get"/>
+                <input class="formSubmitButton" type="submit" value="Get"/>
             </div>
         </form>
     </div>
@@ -33,7 +33,7 @@
         <form method="get" asp-controller="Goods" asp-action="GetGoodsByManufacturer">
             <div class="form-group">
                 <label for="manufacturerSelect">Manufacturers</label>
-                <select class="form-control" name="Manufacturer" id="manufacturerSelect">
+                <select class="formSelectBar" name="Manufacturer" id="manufacturerSelect">
                     @foreach (var manufacturer in ViewBag.Manufacturers)
                     {
                         <option>@manufacturer.Name</option>
@@ -41,7 +41,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <input class="form-control" type="submit" value="Get" />
+                <input class="formSubmitButton" type="submit" value="Get" />
             </div>
         </form>
     </div>
@@ -54,22 +54,22 @@
     <form method="post" asp-controller="Goods" asp-action="AddGoods">
         <div class="form-group">
             <label for="goodsName">Goods name</label>
-            <input class="form-control" type="text" name="goodsName" id="goodsName"/>
+            <input class="formTextField" type="text" name="goodsName" id="goodsName"/>
         </div>
         <div class="form-group">
             <label for="price">Price</label>
-            <input class="form-control" type="number" name="price" id="price"/>
+            <input class="formTextField" type="number" name="price" id="price"/>
         </div>
         <div class="form-group">
             <label for="categoryName">Category name</label>
-            <input class="form-control" type="text" name="categoryName" id="categoryName"/>
+            <input class="formTextField" type="text" name="categoryName" id="categoryName"/>
         </div>
         <div class="form-group">
             <label for="manufacturerName">Manufacturer name</label>
-            <input class="form-control" type="text" name="manufacturerName" id="manufacturerName"/>
+            <input class="formTextField" type="text" name="manufacturerName" id="manufacturerName"/>
         </div>
         <div class="form-group">
-            <input class="form-control" type="submit" value="Send"/>
+            <input class="formSubmitButton" type="submit" value="Send"/>
         </div>
     </form>
 </div>
@@ -82,18 +82,19 @@
                 <label for="goodsFile">Choose file</label>
                 <input class="form-control" type="file" name="goodsFile" id="goodsFile" />
             </div>
-            <div><input class="form-control" type="submit" value="Send"/></div>
+            <div><input class="formSubmitButton" type="submit" value="Send"/></div>
         </form>
     </div>
 </div>
 @*Десериализация JSON файла*@
-<div class="mt-5 pt-3 container align-content-center" style="width: 700px" name="goods list">
-    <div class="table">
-        <div class="d-md-table-row m2">
-            <div class="d-md-table-cell m2"><h4>Name</h4></div>
-            <div class="d-md-table-cell m2"><h4>Price</h4></div>
-            <div class="d-md-table-cell m2"><h4>Category</h4></div>
-            <div class="d-md-table-cell m2"><h4>Manufacturer</h4></div>
+<div class="mt-5 pt-3 container align-content-center" name="goods list">
+    <div class="divTable">
+        <div class="divTr m2">
+            <div class="divTd m2"><h4>Name</h4></div>
+            <div class="divTd m2"><h4>Price</h4></div>
+            <div class="divTd m2"><h4>Category</h4></div>
+            <div class="divTd m2"><h4>Manufacturer</h4></div>
+            <div class="divTd m2"><h4>Buy</h4></div>
         </div>
         @{
 
@@ -105,13 +106,13 @@
                 List<Goods> DesGoods = (List<Goods>)jsonSerializer.ReadObject(fileStream);
                 foreach (var goods in DesGoods)
                 {
-                    <form class="d-md-table-row m2" asp-controller="Goods" asp-action="AddToBasket">
-                        <div class="d-md-table-cell"><input type="hidden" name="id" value="@goods.ID" /></div>
-                        <div class="d-md-table-cell m2">@goods.Name</div>
-                        <div class="d-md-table-cell m2">@goods.Price</div>
-                        <div class="d-md-table-cell m2">@categories.FirstOrDefault(category => category.ID == goods.CategoryID)?.Name</div>
-                        <div class="d-md-table-cell m2">@manufacturers.FirstOrDefault(manufacturer => manufacturer.ID == goods.ManufacturerID)?.Name</div>
-                        <div class="d-md-table-cell m2"><input class="form-control btn-sm" type="submit" value="Add to basket" /></div>
+                    <form class="divTr m2" asp-controller="Goods">
+                        <div class="divTd hidden"><input type="hidden"  name="id" value="@goods.ID" /></div>
+                        <div class="divTd m2">@goods.Name</div>
+                        <div class="divTd m2">@goods.Price</div>
+                        <div class="divTd m2">@categories.FirstOrDefault(category => category.ID == goods.CategoryID)?.Name</div>
+                        <div class="divTd m2">@manufacturers.FirstOrDefault(manufacturer => manufacturer.ID == goods.ManufacturerID)?.Name</div>
+                        <div class="divTd m2"><input class="form-control btn-sm" type="submit" value="Add to basket" /></div>
                     </form>
                 }
             }

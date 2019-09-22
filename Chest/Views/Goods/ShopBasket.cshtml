@@ -14,8 +14,8 @@
 <div>
     <table class="table mt-5">
         <tr>
-            <td>Name</td>
-            <td>Price</td>
+            <td><h4>Name</h4></td>
+            <td><h4>Price</h4></td>
         </tr>
 
         @{
@@ -30,10 +30,18 @@
 
         }
     </table>
-    <form method="post" asp-controller="Goods" asp-action="SendEmailWithGoods">
-        <input type="text" name="email"/>
-        <input type="submit" value="Buy"/>
-    </form>
+    <div style="width: 15%">
+        <form method="post" asp-controller="Goods" asp-action="SendEmailWithGoods">
+            <div class="form-group">
+                <label for="email"><h4>Enter Email</h4></label>
+                <input class="formTextField" type="text" name="email" id="email"/>
+            </div>
+            <div class="form-group">
+                <input class="formSubmitButton" type="submit" value="Buy"/>
+            </div>
+        </form>
+    </div>
+    
 </div>
 
 </body>

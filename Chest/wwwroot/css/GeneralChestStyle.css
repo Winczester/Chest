@@ -1,0 +1,57 @@
+﻿form input.formSubmitButton {
+    display: block;
+    width: 100%;
+    padding: 0.5%;
+    background-color: #ffffff;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+form input.formTextField {
+    display: block;
+    width: 100%;
+    padding: 0.5%;
+    font-size: 14px;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+form div.hidden {
+    display: none
+}
+
+form select.formSelectBar {
+    display: block;
+    width: 100%;
+    padding: 4%;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+div.centerDiv {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
+div.divTable {
+    width: 100%;
+}
+
+div.divTr {
+    width: 100%;
+    display: table-row;
+}
+
+div.divTd {
+    display: table-cell;
+    width: 220px;
+    height: auto;
+    padding: 1%;
+    text-align: center;
+    border: none;
+    vertical-align: middle;
+}

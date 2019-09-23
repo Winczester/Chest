@@ -1,0 +1,41 @@
+﻿
+@{
+    ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<div>
+    <div class="divTable" style="padding-top: 5%">
+        <div>
+            <a asp-action="Create">Create User</a>
+        </div>
+        <div class="divTr">
+            <div class="divTd">Email</div>
+        </div>
+        @{
+            foreach (var user in ViewBag.UsersQueue)
+            {
+                <div class="divTr">
+                    <div class="divTd">
+                        @user.Email
+                    </div>
+                    <div class="divTd">
+                        <form asp-action="Delete" asp-route-id="@user.Id" method="post">
+                            <a asp-action="Edit" asp-route-id="@user.Id">Edit</a>
+                            <input type="submit" value="Delete" class="formSubmitButton"/>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+
+    </div>
+</div>
+</body>
+</html>
+

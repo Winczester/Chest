@@ -75,12 +75,25 @@
 <div class="float-right" style="clear: right; width: 250px">
     <h4>Upload Goods from file</h4>
     <div>
-        <form method="post" enctype="multipart/form-data" asp-controller="Goods" asp-action="AddGoodsFromFile">
+        <form method="post" enctype="multipart/form-data" asp-controller="Goods" asp-action="AddGoodsFromTextFile">
             <div class="form-group">
                 <label for="goodsFile">Choose file</label>
                 <input class="form-control" type="file" name="goodsFile" id="goodsFile" />
             </div>
             <div><input class="formSubmitButton" type="submit" value="Send"/></div>
+        </form>
+    </div>
+</div>
+
+<div class="float-right" style="clear: right; width: 250px">
+    <h4>Upload Goods from Xml</h4>
+    <div>
+        <form method="post" enctype="multipart/form-data" asp-controller="Goods" asp-action="AddGoodsFromXml">
+            <div class="form-group">
+                <label for="xmlFile">Choose file</label>
+                <input class="form-control" type="file" name="xmlFile" id="xmlFile" />
+            </div>
+            <div><input class="formSubmitButton" type="submit" value="Send" /></div>
         </form>
     </div>
 </div>

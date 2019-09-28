@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<goods>
+  <item>
+    <name>IPhone 11</name>
+    <price>30000</price>
+    <category>Smartphone</category>
+    <manufacturer>Apple</manufacturer>
+  </item>
+  <item>
+    <name>SuperMiBookPro 5</name>
+    <price>40000</price>
+    <category>Notebook</category>
+    <manufacturer>Xiaomi</manufacturer>
+  </item>
+</goods>

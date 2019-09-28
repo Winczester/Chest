@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -171,7 +172,7 @@ namespace Chest.Controllers
             }
         }
 
-        //Глава 6: Делегаты, события и лямбда-выражения. Глава 16. Многопоточность
+        //Глава 6: Делегаты, события и лямбда-выражения. Глава 16. Многопоточность. Глава 19: Рефлексия
         [HttpPost("AddGoods")]
         public IActionResult AddGoods([FromForm]string goodsName, [FromForm] int price, [FromForm]string categoryName, [FromForm]string manufacturerName)
         {
@@ -209,7 +210,7 @@ namespace Chest.Controllers
 
         //Глава 10: Работа с потоками и файловой системой, чтение текстовых файлов
         [HttpPost("AddGoodsFromFile")]
-        public IActionResult AddGoodsFromFile(IFormFile goodsFile)
+        public IActionResult AddGoodsFromTextFile(IFormFile goodsFile)
         {
             //string goodsNameFromFile = null;
             //string path = "/files/" + goodsFile.Name;
@@ -241,6 +242,61 @@ namespace Chest.Controllers
             addGoodsTask.Wait();
 
             return Redirect("~/api/Goods");
+        }
+
+        //Глава 21: Работа с Xml
+        [HttpPost("AddFromXml")]
+        public IActionResult AddGoodsFromXml(IFormFile xmlFile)
+        {
+            string path = "/files/" + xmlFile.Name;
+            using (FileStream fileStream = new FileStream(_hostingEnvironment.WebRootPath + path, FileMode.Create))
+            {
+                xmlFile.CopyTo(fileStream);
+            }
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.Load(_hostingEnvironment.WebRootPath + path);
+
+            XmlElement goodsRoot = xmlDocument.DocumentElement;
+            string goodsName = null;
+            int goodsPrice = 0;
+            string goodsCategory = null;
+            string goodsManufacturer = null;
+            foreach (XmlNode node in goodsRoot)
+            {
+                foreach (XmlNode childNode in node.ChildNodes)
+                {
+                    if (childNode.Name == "name")
+                    {
+                        goodsName = childNode.InnerText;
+                    }
+
+                    if (childNode.Name == "price")
+                    {
+                        goodsPrice = Int32.Parse(childNode.InnerText);
+                    }
+
+                    if (childNode.Name == "category")
+                    {
+                        goodsCategory = childNode.InnerText;
+                    }
+
+                    if (childNode.Name == "manufacturer")
+                    {
+                        goodsManufacturer = childNode.InnerText;
+                    }
+                }
+                _databaseContext.Goods.Add(new Goods()
+                {
+                    Name = goodsName,
+                    Price = goodsPrice,
+                    Category = _databaseContext.Categories.FirstOrDefault(category => category.Name == goodsCategory),
+                    Manufacturer = _databaseContext.Manufacturers.FirstOrDefault(manufacturer => manufacturer.Name == goodsManufacturer)
+
+                });
+                _databaseContext.SaveChanges();
+            }
+
+            return RedirectToAction("GetAllGoods");
         }
 
         //Updating goods in database by id
